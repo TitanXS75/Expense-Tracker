@@ -1,16 +1,59 @@
-# React + Vite
+# PFMA - Personal Finance Management App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A neo-brutalist styled expense tracking application built with React and Vite.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Expense-Only Tracking**: Focus solely on monitoring expenses without income complications
+- **Neo-Brutalist Design**: Bold black borders, strong shadows, and clean layouts
+- **Custom Money Shortcuts**: Create personalized quick amount buttons for faster entry
+- **Category Management**: Organize expenses by custom categories
+- **Visual Analytics**: Charts and summaries for expense insights
+- **Responsive Design**: Works seamlessly across devices
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- React 18
+- Vite
+- Tailwind CSS
+- Lucide Icons
+- Recharts for Analytics
 
-## Expanding the ESLint configuration
+## Getting Started
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+## Design Philosophy
+
+The app follows a neo-brutalist aesthetic with:
+- Thick black borders (border-2 to border-4)
+- Strong shadows (shadow-lg to shadow-2xl)
+- Bold typography and uppercase text
+- Clean, minimal layouts with high contrast
+
+## Project Structure
+
+```
+src/
+├── components/          # Reusable UI components
+│   ├── TransactionForm.jsx
+│   ├── TransactionList.jsx
+│   ├── SummaryCards.jsx
+│   └── DashboardChart.jsx
+├── pages/              # Page components
+│   ├── Dashboard.jsx
+│   ├── Transactions.jsx
+│   ├── Charts.jsx
+│   └── Settings.jsx
+├── context/            # Global state management
+│   └── GlobalState.jsx
+└── assets/             # Static assets
+```

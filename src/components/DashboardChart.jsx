@@ -98,7 +98,7 @@ const DashboardChart = () => {
                         <BarChart
                             data={topSpendingData}
                             layout="horizontal"
-                            margin={{ left: 10, right: 10, top: 10, bottom: 30 }}
+                            margin={{ left: 10, right: 20, top: 10, bottom: 40 }}
                             barCategoryGap="25%"
                         >
                             <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" vertical={false} />
@@ -144,7 +144,7 @@ const DashboardChart = () => {
 
             case 'category':
                 return (
-                    <div className="h-full flex flex-col gap-4 overflow-y-auto">
+                    <div className="flex flex-col gap-4 overflow-hidden">
                         {categoryData.length === 0 ? (
                             <div className="flex flex-1 items-center justify-center text-slate-500">
                                 <p>No expense data available</p>
@@ -174,21 +174,19 @@ const DashboardChart = () => {
                                     </ResponsiveContainer>
                                 </div>
 
-                                {/* Category list — no boxes, just rows */}
-                                <div className="flex flex-col gap-2 pb-2">
+                                {/* Category list — dot · name ₹price */}
+                                <div className="flex flex-col gap-1">
                                     {categoryData.map((cat, index) => (
                                         <div
                                             key={index}
-                                            className="flex items-center justify-between px-2 py-1"
+                                            className="flex items-center gap-2 px-2 py-1"
                                         >
-                                            <div className="flex items-center gap-2">
-                                                <div
-                                                    className="w-3 h-3 rounded-full flex-shrink-0"
-                                                    style={{ backgroundColor: cat.color }}
-                                                />
-                                                <span className="text-sm font-semibold text-slate-800">{cat.name}</span>
-                                            </div>
-                                            <span className="text-sm font-black text-slate-900">₹{cat.value.toFixed(2)}</span>
+                                            <div
+                                                className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                                                style={{ backgroundColor: cat.color }}
+                                            />
+                                            <span className="text-sm font-semibold text-slate-800">{cat.name}</span>
+                                            <span className="text-sm font-black text-slate-900 ml-1">₹{cat.value.toFixed(2)}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -270,21 +268,20 @@ const DashboardChart = () => {
 
             {/* Time Range Filter — only for monthly view */}
             {view === 'monthly' && (
-                <div className="flex justify-center w-full">
+                <div className="flex w-full">
                     <div
-                        className="flex gap-1 rounded-nb border-2 border-nb-border shadow-nb-md p-1"
+                        className="flex w-full gap-1 rounded-nb border-2 border-nb-border p-1"
                         style={{ backgroundColor: '#FFF8F0' }}
                     >
                         {[
-                            { label: 'Last 10 Days', value: '10' },
-                            { label: 'Last 20 Days', value: '20' },
-                            { label: 'Last 30 Days', value: '30' },
+                            { label: 'Last 10D', value: '10' },
+                            { label: 'Last 20D', value: '20' },
                             { label: 'All Time', value: 'all' },
                         ].map((btn) => (
                             <button
                                 key={btn.value}
                                 onClick={() => setTimeRange(btn.value)}
-                                className={`px-4 py-2 rounded-nb text-sm font-bold uppercase tracking-wide transition-all duration-200 ease-in-out border ${timeRange === btn.value
+                                className={`flex-1 py-2 rounded-nb text-xs font-bold uppercase tracking-wide transition-all duration-200 ease-in-out border ${timeRange === btn.value
                                     ? 'bg-nb-primary text-white border-black'
                                     : 'bg-transparent text-slate-900 border-transparent hover:bg-black/5'
                                     }`}

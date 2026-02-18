@@ -91,10 +91,10 @@ const CalculatorModal = ({ onClose }) => {
 
     return (
         <div
-            className="fixed inset-0 bg-black/60 flex items-end sm:items-center justify-center z-50 p-4"
+            className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 pb-24"
             onClick={(e) => e.target === e.currentTarget && onClose()}
         >
-            <div className="animate-modal-in bg-nb-surface border-2 border-slate-900 rounded-2xl shadow-[6px_6px_0px_#1e293b] w-full max-w-xs overflow-hidden">
+            <div className="animate-modal-in bg-nb-surface border-2 border-slate-900 rounded-2xl shadow-[6px_6px_0px_#1e293b] w-full max-w-xs overflow-hidden max-h-[calc(100vh-7rem)] overflow-y-auto">
                 {/* Header */}
                 <div className="flex items-center justify-between px-4 pt-4 pb-2">
                     <span className="text-xs font-black uppercase tracking-[0.2em] text-slate-500">Calculator</span>

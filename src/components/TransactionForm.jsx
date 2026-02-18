@@ -221,7 +221,7 @@ const TransactionForm = () => {
                     </div>
 
                     {shortcuts.length === 0 ? (
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex flex-wrap gap-2 gap-y-4">
                             <button
                                 type="button"
                                 onClick={handleAddShortcut}
@@ -232,7 +232,7 @@ const TransactionForm = () => {
                         </div>
                     ) : (
                         <>
-                            <div className="flex flex-wrap gap-2">
+                            <div className="flex flex-wrap gap-2 gap-y-4">
                                 {shortcuts.map((shortcut, index) => (
                                     <div key={index} className="relative group">
                                         <button
@@ -280,7 +280,7 @@ const TransactionForm = () => {
                     </div>
 
                     {categories.filter(c => c.type === 'expense').length === 0 ? (
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex flex-wrap gap-2 gap-y-4">
                             <button
                                 type="button"
                                 onClick={handleAddCategory}
@@ -290,7 +290,7 @@ const TransactionForm = () => {
                             </button>
                         </div>
                     ) : (
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex flex-wrap gap-2 gap-y-4">
                             {categories.filter(c => c.type === 'expense').map((cat) => (
                                 <div key={cat.id} className="relative group">
                                     <button

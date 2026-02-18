@@ -56,7 +56,7 @@ const Settings = () => {
                             : 'bg-red-50 text-red-600 hover:bg-red-100'
                             }`}
                     >
-                        Clear 
+                        Clear
                     </button>
                 </div>
             </div>
@@ -64,9 +64,9 @@ const Settings = () => {
             {/* Neo-Brutalist Confirmation Modal */}
             {showModal && (
                 <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white border-2 border-slate-900 rounded-lg shadow-2xl max-w-sm w-full p-5 relative">
+                    <div className="animate-modal-in bg-white border-2 border-slate-900 rounded-lg shadow-2xl max-w-sm w-full p-5 relative">
                         {/* Close button */}
-                        <button 
+                        <button
                             onClick={() => setShowModal(false)}
                             className="absolute top-3 right-3 p-1 hover:bg-slate-100 rounded-full transition-colors"
                         >
@@ -116,8 +116,11 @@ const Settings = () => {
                     About
                 </span>
                 <h2 className="text-2xl font-extrabold text-slate-900 leading-none">
-                    PFMA v1.0.0
+                    Expense Tracker v1.0.0
                 </h2>
+                <p className="text-sm font-semibold text-slate-500 -mt-1">
+                    Track your expenses, effortlessly.
+                </p>
                 <p className="text-xs text-nb-muted max-w-xs">
                     Built with React, Tailwind CSS, and Recharts. Offline support enabled.
                     Designed With Simplicity and Neo Brutalism.

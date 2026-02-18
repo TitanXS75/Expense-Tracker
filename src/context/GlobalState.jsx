@@ -35,6 +35,13 @@ const AppReducer = (state, action) => {
                 ...state,
                 categories: [...state.categories, action.payload],
             };
+        case 'DELETE_CATEGORY':
+            return {
+                ...state,
+                categories: state.categories.filter(
+                    (category) => category.id !== action.payload
+                ),
+            };
         default:
             return state;
     }
@@ -72,6 +79,13 @@ export const GlobalProvider = ({ children }) => {
         });
     }
 
+    function deleteCategory(id) {
+        dispatch({
+            type: 'DELETE_CATEGORY',
+            payload: id,
+        });
+    }
+
     return (
         <GlobalContext.Provider
             value={{
@@ -80,6 +94,7 @@ export const GlobalProvider = ({ children }) => {
                 addTransaction,
                 deleteTransaction,
                 addCategory,
+                deleteCategory,
             }}
         >
             {children}

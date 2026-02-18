@@ -19,7 +19,7 @@ const TransactionForm = () => {
         const saved = localStorage.getItem('moneyShortcuts');
         return saved ? JSON.parse(saved) : [];
     });
-    const { addTransaction, categories, addCategory } = useContext(GlobalContext);
+    const { addTransaction, categories, addCategory, deleteCategory } = useContext(GlobalContext);
 
     const playCashSound = () => {
         try {
@@ -302,6 +302,16 @@ const TransactionForm = () => {
                                             }`}
                                     >
                                         {cat.name}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            if (category === cat.name) setCategory('');
+                                            deleteCategory(cat.id);
+                                        }}
+                                        className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white border-2 border-slate-900 rounded-full flex items-center justify-center text-xs font-black hover:bg-red-600 transition-colors"
+                                    >
+                                        ×
                                     </button>
                                 </div>
                             ))}

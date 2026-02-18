@@ -13,16 +13,24 @@ const TransactionForm = () => {
     const [showAmountModal, setShowAmountModal] = useState(false);
     const [showShortcutModal, setShowShortcutModal] = useState(false);
     const [tempAmount, setTempAmount] = useState('');
-    const [shortcuts, setShortcuts] = useState([]);
+    const [shortcuts, setShortcuts] = useState(() => {
+        const saved = localStorage.getItem('moneyShortcuts');
+        return saved ? JSON.parse(saved) : [];
+    });
     const { addTransaction, categories } = useContext(GlobalContext);
 
     const onSubmit = (e) => {
         e.preventDefault();
+        console.log('Form submitted');
 
         const finalAmount = customAmount || amount;
         const finalCategory = category || customCategory;
         
+        console.log('Form data:', { text, finalAmount, finalCategory });
+        
         if (!text || !finalAmount || !finalCategory) {
+            console.log('Validation failed - missing fields');
+            alert('Please fill in all fields: Description, Amount, and Category');
             return;
         }
 
@@ -37,12 +45,16 @@ const TransactionForm = () => {
             date: new Date().toISOString(),
         };
 
+        console.log('Adding transaction:', newTransaction);
         addTransaction(newTransaction);
+        
+        // Reset form
         setText('');
         setAmount('');
         setCustomAmount('');
         setCategory('');
         setCustomCategory('');
+        console.log('Form reset successfully');
     };
 
     const handleAmountSelect = (amt) => {
@@ -92,7 +104,9 @@ const TransactionForm = () => {
 
     const handleSaveShortcut = () => {
         if (tempAmount && shortcuts.length < 5) {
-            setShortcuts([...shortcuts, +tempAmount]);
+            const newShortcuts = [...shortcuts, +tempAmount];
+            setShortcuts(newShortcuts);
+            localStorage.setItem('moneyShortcuts', JSON.stringify(newShortcuts));
             setTempAmount('');
             setShowShortcutModal(false);
         }
@@ -101,6 +115,12 @@ const TransactionForm = () => {
     const handleShortcutSelect = (amount) => {
         setCustomAmount(amount.toString());
         setAmount('');
+    };
+
+    const handleRemoveShortcut = (index) => {
+        const newShortcuts = shortcuts.filter((_, i) => i !== index);
+        setShortcuts(newShortcuts);
+        localStorage.setItem('moneyShortcuts', JSON.stringify(newShortcuts));
     };
 
     return (
@@ -124,57 +144,71 @@ const TransactionForm = () => {
                 <label className="block text-xs font-semibold tracking-wide uppercase text-slate-600 mb-2">
                     Amount
                 </label>
-                <div className="flex items-center gap-4 mb-4">
-                    <span className="text-6xl font-black text-slate-900">₹</span>
-                    <input
-                        type="number"
-                        className="flex-1 text-5xl font-black text-slate-900 bg-transparent focus:outline-none placeholder-slate-300 py-2 [-moz-appearance:_textfield] [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none"
-                        placeholder="0"
-                        value={customAmount || amount}
-                        onChange={handleCustomAmountChange}
-                    />
+                <div className="border-2 border-slate-900 rounded-lg shadow-md px-4 py-3 mb-4">
+                    <div className="flex items-center gap-4 overflow-hidden">
+                        <span className="text-6xl font-black text-slate-900 flex-shrink-0">₹</span>
+                        <input
+                            type="number"
+                            className="flex-1 text-5xl font-black text-slate-900 bg-transparent focus:outline-none placeholder-slate-300 py-2 min-w-0 [-moz-appearance:_textfield] [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none"
+                            placeholder="0"
+                            value={customAmount || amount}
+                            onChange={handleCustomAmountChange}
+                        />
+                    </div>
                 </div>
 
                 {/* Money Shortcuts Section */}
                 <div className="space-y-2">
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center">
                         <span className="text-xs font-semibold text-slate-600">Quick Amounts</span>
-                        {shortcuts.length < 5 && (
+                    </div>
+                    
+                    {shortcuts.length === 0 ? (
+                        <div className="flex flex-wrap gap-2">
                             <button
                                 type="button"
                                 onClick={handleAddShortcut}
-                                className="px-3 py-1 text-xs font-bold border-2 border-slate-900 rounded-lg bg-white text-slate-900 shadow-md hover:shadow-lg transition-all"
+                                className="px-4 py-2 font-bold border-2 border-slate-900 rounded-lg bg-white text-slate-900 shadow-md hover:shadow-lg transition-all"
                             >
-                                + Add
+                                +
                             </button>
-                        )}
-                    </div>
-                    
-                    {shortcuts.length === 0 ? null : (
-                        <div className="flex flex-wrap gap-2">
-                            {shortcuts.map((shortcut, index) => (
-                                <div key={index} className="relative group">
-                                    <button
-                                        type="button"
-                                        onClick={() => handleShortcutSelect(shortcut)}
-                                        className={`px-4 py-2 font-bold border-2 border-slate-900 rounded-lg transition-all ${
-                                            customAmount === shortcut.toString()
-                                                ? 'bg-slate-900 text-white shadow-lg'
-                                                : 'bg-white text-slate-900 shadow-md hover:shadow-lg'
-                                        }`}
-                                    >
-                                        ₹{shortcut}/-
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => setShortcuts(shortcuts.filter((_, i) => i !== index))}
-                                        className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white border-2 border-slate-900 rounded-full flex items-center justify-center text-xs font-black hover:bg-red-600 transition-colors"
-                                    >
-                                        ×
-                                    </button>
-                                </div>
-                            ))}
                         </div>
+                    ) : (
+                        <>
+                            <div className="flex flex-wrap gap-2">
+                                {shortcuts.map((shortcut, index) => (
+                                    <div key={index} className="relative group">
+                                        <button
+                                            type="button"
+                                            onClick={() => handleShortcutSelect(shortcut)}
+                                            className={`px-4 py-2 font-bold border-2 border-slate-900 rounded-lg transition-all ${
+                                                customAmount === shortcut.toString()
+                                                    ? 'bg-slate-900 text-white shadow-lg'
+                                                    : 'bg-white text-slate-900 shadow-md hover:shadow-lg'
+                                            }`}
+                                        >
+                                            ₹{shortcut}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => handleRemoveShortcut(index)}
+                                            className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white border-2 border-slate-900 rounded-full flex items-center justify-center text-xs font-black hover:bg-red-600 transition-colors"
+                                        >
+                                            ×
+                                        </button>
+                                    </div>
+                                ))}
+                                {shortcuts.length < 5 && (
+                                    <button
+                                        type="button"
+                                        onClick={handleAddShortcut}
+                                        className="px-4 py-2 font-bold border-2 border-slate-900 rounded-lg bg-white text-slate-900 shadow-md hover:shadow-lg transition-all flex items-center gap-1"
+                                    >
+                                        <PlusCircle size={16} />
+                                    </button>
+                                )}
+                            </div>
+                        </>
                     )}
                 </div>
             </div>
@@ -317,13 +351,12 @@ const TransactionForm = () => {
                 </div>
             )}
 
-            {/* Big Add Transaction Button */}
+            {/* Submit Button */}
             <button 
                 type="submit"
                 className="w-full py-4 bg-orange-500 hover:bg-orange-600 text-white font-black text-xl border-2 border-slate-900 rounded-lg shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
             >
-                <PlusCircle size={24} />
-                ADD TRANSACTION
+                Spent
             </button>
         </form>
     );

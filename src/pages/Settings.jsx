@@ -64,7 +64,7 @@ const Settings = () => {
             {/* Neo-Brutalist Confirmation Modal */}
             {showModal && (
                 <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white border-4 border-slate-900 rounded-lg shadow-2xl max-w-md w-full p-6 relative">
+                    <div className="bg-white border-4 border-slate-900 rounded-lg shadow-2xl max-w-sm w-full p-5 relative">
                         {/* Close button */}
                         <button 
                             onClick={() => setShowModal(false)}
@@ -74,35 +74,35 @@ const Settings = () => {
                         </button>
 
                         {/* Warning Icon */}
-                        <div className="flex justify-center mb-4">
-                            <div className="w-16 h-16 bg-red-100 border-4 border-red-500 rounded-full flex items-center justify-center">
-                                <AlertTriangle size={32} className="text-red-600" />
+                        <div className="flex justify-center mb-3">
+                            <div className="w-12 h-12 bg-red-100 border-4 border-red-500 rounded-full flex items-center justify-center">
+                                <AlertTriangle size={24} className="text-red-600" />
                             </div>
                         </div>
 
                         {/* Title */}
-                        <h3 className="text-2xl font-black text-slate-900 text-center mb-2">
+                        <h3 className="text-xl font-black text-slate-900 text-center mb-2">
                             WARNING!
                         </h3>
 
                         {/* Message */}
-                        <p className="text-slate-700 text-center mb-6 font-medium">
+                        <p className="text-slate-700 text-center mb-4 font-medium text-sm">
                             You are about to delete <span className="font-black text-red-600">ALL DATA</span>.<br />
                             This includes {transactions.length} transaction{transactions.length !== 1 && 's'} and all categories.<br />
-                            <span className="text-sm text-slate-500">This action cannot be undone.</span>
+                            <span className="text-xs text-slate-500">This action cannot be undone.</span>
                         </p>
 
                         {/* Action Buttons */}
-                        <div className="flex gap-3">
+                        <div className="flex gap-2">
                             <button
                                 onClick={() => setShowModal(false)}
-                                className="flex-1 py-3 bg-white text-slate-900 font-bold border-4 border-slate-900 rounded-lg shadow-md hover:shadow-lg transition-all"
+                                className="flex-1 py-2 bg-white text-slate-900 font-bold border-4 border-slate-900 rounded-lg shadow-md hover:shadow-lg transition-all"
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={clearData}
-                                className="flex-1 py-3 bg-red-500 text-white font-bold border-4 border-slate-900 rounded-lg shadow-md hover:shadow-lg hover:bg-red-600 transition-all"
+                                className="flex-1 py-2 bg-red-600 text-white font-bold border-4 border-red-700 rounded-lg shadow-md hover:bg-red-700 hover:shadow-lg transition-all"
                             >
                                 Delete All
                             </button>
@@ -119,7 +119,8 @@ const Settings = () => {
                     PFMA v1.0.0
                 </h2>
                 <p className="text-xs text-nb-muted max-w-xs">
-                    Personal Finance Management App built with React, Tailwind CSS, and Recharts. Offline support enabled.
+                    Built with React, Tailwind CSS, and Recharts. Offline support enabled.
+                    Designed With Simplicity and Neo Brutalism.
                 </p>
             </div>
         </div>

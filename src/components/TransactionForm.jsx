@@ -21,6 +21,38 @@ const TransactionForm = () => {
     });
     const { addTransaction, categories, addCategory } = useContext(GlobalContext);
 
+    const playCashSound = () => {
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            // 3-note ascending arpeggio: C5 → E5 → G5 (major chord)
+            const notes = [523.25, 659.25, 783.99];
+            notes.forEach((freq, i) => {
+                const t = ctx.currentTime + i * 0.13;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                // Slight reverb via a short delay
+                const delay = ctx.createDelay(0.1);
+                delay.delayTime.value = 0.04;
+                const delayGain = ctx.createGain();
+                delayGain.gain.value = 0.18;
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                gain.connect(delay);
+                delay.connect(delayGain);
+                delayGain.connect(ctx.destination);
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(freq, t);
+                // Attack → sustain → release
+                gain.gain.setValueAtTime(0, t);
+                gain.gain.linearRampToValueAtTime(0.28, t + 0.02);
+                gain.gain.setValueAtTime(0.28, t + 0.06);
+                gain.gain.exponentialRampToValueAtTime(0.001, t + 0.38);
+                osc.start(t);
+                osc.stop(t + 0.4);
+            });
+        } catch (_) { /* silently fail if audio not supported */ }
+    };
+
     const onSubmit = (e) => {
         e.preventDefault();
         console.log('Form submitted');
@@ -49,6 +81,7 @@ const TransactionForm = () => {
 
         console.log('Adding transaction:', newTransaction);
         addTransaction(newTransaction);
+        playCashSound();
 
         // Reset form
         setText('');
@@ -127,7 +160,7 @@ const TransactionForm = () => {
     };
 
     const handleSaveShortcut = () => {
-        if (tempAmount && shortcuts.length < 5) {
+        if (tempAmount) {
             const newShortcuts = [...shortcuts, +tempAmount];
             setShortcuts(newShortcuts);
             localStorage.setItem('moneyShortcuts', JSON.stringify(newShortcuts));
@@ -206,8 +239,8 @@ const TransactionForm = () => {
                                             type="button"
                                             onClick={() => handleShortcutSelect(shortcut)}
                                             className={`px-4 py-2 font-bold border-2 border-slate-900 rounded-lg transition-all ${customAmount === shortcut.toString()
-                                                    ? 'bg-slate-900 text-white shadow-lg'
-                                                    : 'bg-white text-slate-900 shadow-md hover:shadow-lg'
+                                                ? 'bg-slate-900 text-white shadow-lg'
+                                                : 'bg-white text-slate-900 shadow-md hover:shadow-lg'
                                                 }`}
                                         >
                                             ₹{shortcut}
@@ -221,15 +254,13 @@ const TransactionForm = () => {
                                         </button>
                                     </div>
                                 ))}
-                                {shortcuts.length < 5 && (
-                                    <button
-                                        type="button"
-                                        onClick={handleAddShortcut}
-                                        className="px-4 py-2 font-bold border-2 border-slate-900 rounded-lg bg-white text-slate-900 shadow-md hover:shadow-lg transition-all flex items-center gap-1"
-                                    >
-                                        <PlusCircle size={16} />
-                                    </button>
-                                )}
+                                <button
+                                    type="button"
+                                    onClick={handleAddShortcut}
+                                    className="px-4 py-2 font-bold border-2 border-slate-900 rounded-lg bg-white text-slate-900 shadow-md hover:shadow-lg transition-all flex items-center gap-1"
+                                >
+                                    <PlusCircle size={16} />
+                                </button>
                             </div>
                         </>
                     )}
@@ -266,8 +297,8 @@ const TransactionForm = () => {
                                         type="button"
                                         onClick={() => handleCategorySelect(cat.name)}
                                         className={`px-4 py-2 font-bold border-2 border-slate-900 rounded-lg transition-all ${category === cat.name
-                                                ? 'bg-slate-900 text-white shadow-lg'
-                                                : 'bg-white text-slate-900 shadow-md hover:shadow-lg'
+                                            ? 'bg-slate-900 text-white shadow-lg'
+                                            : 'bg-white text-slate-900 shadow-md hover:shadow-lg'
                                             }`}
                                     >
                                         {cat.name}
@@ -289,8 +320,9 @@ const TransactionForm = () => {
             {/* Shortcut Modal */}
             {showShortcutModal && (
                 <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white border border-slate-900 rounded-lg shadow-2xl max-w-sm w-full p-6 relative">
+                    <div className="bg-white border-2 border-slate-900 rounded-lg shadow-2xl max-w-sm w-full p-5 relative">
                         <button
+                            type="button"
                             onClick={() => setShowShortcutModal(false)}
                             className="absolute top-3 right-3 p-1 hover:bg-slate-100 rounded-full transition-colors"
                         >
@@ -298,31 +330,28 @@ const TransactionForm = () => {
                         </button>
 
                         <h3 className="text-xl font-black text-slate-900 text-center mb-4">
-                            Add Money Shortcut
+                            Add Quick Amount
                         </h3>
 
-                        <div className="flex items-center gap-2 mb-4">
-                            <span className="text-3xl font-black text-slate-900">₹</span>
-                            <input
-                                type="number"
-                                autoFocus
-                                className="flex-1 text-3xl font-black text-slate-900 bg-white border-2 border-slate-900 rounded-lg px-3 py-2 focus:outline-none focus:shadow-lg [-moz-appearance:_textfield] [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none"
-                                placeholder="0"
-                                value={tempAmount}
-                                onChange={(e) => setTempAmount(e.target.value)}
-                            />
-                            <span className="text-3xl font-black text-slate-900">/-</span>
-                        </div>
+                        <input
+                            type="number"
+                            autoFocus
+                            className="w-full px-4 py-3 bg-white border-2 border-slate-900 rounded-lg shadow-md focus:outline-none focus:shadow-lg transition-shadow text-slate-900 placeholder-slate-400 mb-4 [-moz-appearance:_textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            placeholder="Enter amount..."
+                            value={tempAmount}
+                            onChange={(e) => setTempAmount(e.target.value)}
+                        />
 
                         <button
+                            type="button"
                             onClick={handleSaveShortcut}
-                            disabled={!tempAmount || shortcuts.length >= 5}
-                            className={`w-full py-3 font-black text-lg border-2 border-slate-900 rounded-lg shadow-md transition-all ${tempAmount && shortcuts.length < 5
-                                    ? 'bg-orange-500 text-white hover:bg-orange-600'
-                                    : 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                            disabled={!tempAmount}
+                            className={`w-full py-3 font-black text-lg border-2 border-slate-900 rounded-lg shadow-md transition-all ${tempAmount
+                                ? 'bg-nb-primary text-white hover:opacity-90'
+                                : 'bg-slate-200 text-slate-400 cursor-not-allowed'
                                 }`}
                         >
-                            Add Shortcut ({shortcuts.length}/5)
+                            Add
                         </button>
                     </div>
                 </div>
@@ -359,8 +388,8 @@ const TransactionForm = () => {
                             onClick={handleSaveManualAmount}
                             disabled={!tempAmount}
                             className={`w-full py-3 font-black text-lg border-4 border-slate-900 rounded-lg shadow-md transition-all ${tempAmount
-                                    ? 'bg-slate-900 text-white hover:shadow-lg'
-                                    : 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                                ? 'bg-slate-900 text-white hover:shadow-lg'
+                                : 'bg-slate-200 text-slate-400 cursor-not-allowed'
                                 }`}
                         >
                             Confirm
@@ -397,8 +426,8 @@ const TransactionForm = () => {
                             onClick={handleSaveCategory}
                             disabled={!tempCategory.trim()}
                             className={`w-full py-3 font-black text-lg border-2 border-slate-900 rounded-lg shadow-md transition-all ${tempCategory.trim()
-                                    ? 'bg-orange-500 text-white hover:bg-orange-600'
-                                    : 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                                ? 'bg-orange-500 text-white hover:bg-orange-600'
+                                : 'bg-slate-200 text-slate-400 cursor-not-allowed'
                                 }`}
                         >
                             Add Category

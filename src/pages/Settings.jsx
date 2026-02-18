@@ -64,7 +64,7 @@ const Settings = () => {
             {/* Neo-Brutalist Confirmation Modal */}
             {showModal && (
                 <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white border-4 border-slate-900 rounded-lg shadow-2xl max-w-sm w-full p-5 relative">
+                    <div className="bg-white border-2 border-slate-900 rounded-lg shadow-2xl max-w-sm w-full p-5 relative">
                         {/* Close button */}
                         <button 
                             onClick={() => setShowModal(false)}
@@ -96,13 +96,13 @@ const Settings = () => {
                         <div className="flex gap-2">
                             <button
                                 onClick={() => setShowModal(false)}
-                                className="flex-1 py-2 bg-white text-slate-900 font-bold border-4 border-slate-900 rounded-lg shadow-md hover:shadow-lg transition-all"
+                                className="flex-1 py-2 bg-orange-500 text-white font-bold border-2 border-slate-900 rounded-lg shadow-md hover:bg-orange-600 hover:shadow-lg transition-all"
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={clearData}
-                                className="flex-1 py-2 bg-red-600 text-white font-bold border-4 border-red-700 rounded-lg shadow-md hover:bg-red-700 hover:shadow-lg transition-all"
+                                className="flex-1 py-2 bg-red-600 text-white font-bold border-2 border-slate-900 rounded-lg shadow-md hover:bg-red-700 hover:shadow-lg transition-all"
                             >
                                 Delete All
                             </button>

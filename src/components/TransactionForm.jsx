@@ -9,22 +9,24 @@ const TransactionForm = () => {
     const [amount, setAmount] = useState('');
     const [customAmount, setCustomAmount] = useState('');
     const [category, setCategory] = useState('');
-    const [customCategory, setCustomCategory] = useState('');
+    const [newCategory, setNewCategory] = useState('');
     const [showAmountModal, setShowAmountModal] = useState(false);
     const [showShortcutModal, setShowShortcutModal] = useState(false);
+    const [showCategoryModal, setShowCategoryModal] = useState(false);
     const [tempAmount, setTempAmount] = useState('');
+    const [tempCategory, setTempCategory] = useState('');
     const [shortcuts, setShortcuts] = useState(() => {
         const saved = localStorage.getItem('moneyShortcuts');
         return saved ? JSON.parse(saved) : [];
     });
-    const { addTransaction, categories } = useContext(GlobalContext);
+    const { addTransaction, categories, addCategory } = useContext(GlobalContext);
 
     const onSubmit = (e) => {
         e.preventDefault();
         console.log('Form submitted');
 
         const finalAmount = customAmount || amount;
-        const finalCategory = category || customCategory;
+        const finalCategory = category;
         
         console.log('Form data:', { text, finalAmount, finalCategory });
         
@@ -53,7 +55,7 @@ const TransactionForm = () => {
         setAmount('');
         setCustomAmount('');
         setCategory('');
-        setCustomCategory('');
+        setNewCategory('');
         console.log('Form reset successfully');
     };
 
@@ -69,12 +71,41 @@ const TransactionForm = () => {
 
     const handleCategorySelect = (catName) => {
         setCategory(catName);
-        setCustomCategory('');
     };
 
-    const handleCustomCategoryChange = (e) => {
-        setCustomCategory(e.target.value);
-        setCategory('');
+    const handleAddCategory = () => {
+        setShowCategoryModal(true);
+        setTempCategory('');
+    };
+
+    const handleSaveCategory = () => {
+        if (tempCategory && tempCategory.trim()) {
+            const categoryName = tempCategory.trim();
+            
+            // Check if category already exists
+            const existingCategory = categories.find(c => c.name.toLowerCase() === categoryName.toLowerCase());
+            
+            if (!existingCategory) {
+                // Generate random color for new category
+                const colors = ['#8B5CF6', '#EC4899', '#14B8A6', '#F97316', '#84CC16', '#06B6D4', '#A855F7', '#F59E0B'];
+                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                // Add new category
+                const newCategory = {
+                    id: Date.now(),
+                    name: categoryName,
+                    type: 'expense',
+                    color: randomColor
+                };
+                console.log('Adding new category:', newCategory);
+                addCategory(newCategory);
+            }
+            
+            // Select the category
+            setCategory(categoryName);
+            setTempCategory('');
+            setShowCategoryModal(false);
+        }
     };
 
     const handleManualAmountClick = () => {
@@ -87,13 +118,6 @@ const TransactionForm = () => {
             setCustomAmount(tempAmount);
             setAmount('');
             setShowAmountModal(false);
-        }
-    };
-
-    const handleCustomCategorySelect = () => {
-        if (customCategory) {
-            setCategory(customCategory);
-            setCustomCategory(''); // Clear custom after selecting
         }
     };
 
@@ -219,51 +243,49 @@ const TransactionForm = () => {
                     Category
                 </label>
                 
-                {/* Suggested Category + Custom */}
-                <div className="flex gap-2 mb-3">
-                    {categories.filter(c => c.type === 'expense').slice(0, 1).map((cat) => (
-                        <button
-                            key={cat.id}
-                            type="button"
-                            onClick={() => handleCategorySelect(cat.name)}
-                            className={`px-4 py-2 font-bold border-2 border-slate-900 rounded-lg transition-all ${
-                                category === cat.name
-                                    ? 'bg-slate-900 text-white shadow-lg'
-                                    : 'bg-white text-slate-900 shadow-md hover:shadow-lg'
-                            }`}
-                        >
-                            {cat.name}
-                        </button>
-                    ))}
-                    <button
-                        type="button"
-                        onClick={() => document.querySelector('input[placeholder*="custom"]').focus()}
-                        className="px-4 py-2 font-bold border-2 border-slate-900 rounded-lg bg-white text-slate-900 shadow-md hover:shadow-lg transition-all"
-                    >
-                        Custom
-                    </button>
+                {/* Categories - Quick Select */}
+                <div className="space-y-2">
+                    <div className="flex items-center">
+                        <span className="text-xs font-semibold text-slate-600">Your Categories</span>
+                    </div>
+                    
+                    {categories.filter(c => c.type === 'expense').length === 0 ? (
+                        <div className="flex flex-wrap gap-2">
+                            <button
+                                type="button"
+                                onClick={handleAddCategory}
+                                className="w-full py-2 font-bold border-2 border-slate-900 rounded-lg bg-white text-slate-900 shadow-md hover:shadow-lg transition-all"
+                            >
+                                + Add Your First Category
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="flex flex-wrap gap-2">
+                            {categories.filter(c => c.type === 'expense').map((cat) => (
+                                <div key={cat.id} className="relative group">
+                                    <button
+                                        type="button"
+                                        onClick={() => handleCategorySelect(cat.name)}
+                                        className={`px-4 py-2 font-bold border-2 border-slate-900 rounded-lg transition-all ${
+                                            category === cat.name
+                                                ? 'bg-slate-900 text-white shadow-lg'
+                                                : 'bg-white text-slate-900 shadow-md hover:shadow-lg'
+                                        }`}
+                                    >
+                                        {cat.name}
+                                    </button>
+                                </div>
+                            ))}
+                            <button
+                                type="button"
+                                onClick={handleAddCategory}
+                                className="px-4 py-2 font-bold border-2 border-slate-900 rounded-lg bg-white text-slate-900 shadow-md hover:shadow-lg transition-all flex items-center gap-1"
+                            >
+                                <PlusCircle size={16} />
+                            </button>
+                        </div>
+                    )}
                 </div>
-
-                {/* Custom Category Input */}
-                <input
-                    type="text"
-                    className="w-full px-4 py-3 bg-white border-2 border-slate-900 rounded-lg shadow-md focus:outline-none focus:shadow-lg transition-shadow text-slate-900 placeholder-slate-400 mb-2"
-                    placeholder="Enter custom category..."
-                    value={category || customCategory}
-                    onChange={(e) => {
-                        setCategory('');
-                        setCustomCategory(e.target.value);
-                    }}
-                />
-                {customCategory && (
-                    <button
-                        type="button"
-                        onClick={handleCustomCategorySelect}
-                        className="w-full py-2 bg-slate-900 text-white font-bold border-2 border-slate-900 rounded-lg shadow-md hover:shadow-lg transition-all"
-                    >
-                        Use "{customCategory}"
-                    </button>
-                )}
             </div>
 
             {/* Shortcut Modal */}
@@ -351,12 +373,51 @@ const TransactionForm = () => {
                 </div>
             )}
 
+            {/* Category Modal */}
+            {showCategoryModal && (
+                <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white border-2 border-slate-900 rounded-lg shadow-2xl max-w-sm w-full p-5 relative">
+                        <button 
+                            onClick={() => setShowCategoryModal(false)}
+                            className="absolute top-3 right-3 p-1 hover:bg-slate-100 rounded-full transition-colors"
+                        >
+                            <X size={24} className="text-slate-600" />
+                        </button>
+
+                        <h3 className="text-xl font-black text-slate-900 text-center mb-4">
+                            Add Category
+                        </h3>
+
+                        <input
+                            type="text"
+                            autoFocus
+                            className="w-full px-4 py-3 bg-white border-2 border-slate-900 rounded-lg shadow-md focus:outline-none focus:shadow-lg transition-shadow text-slate-900 placeholder-slate-400 mb-4"
+                            placeholder="Category name..."
+                            value={tempCategory}
+                            onChange={(e) => setTempCategory(e.target.value)}
+                        />
+
+                        <button
+                            onClick={handleSaveCategory}
+                            disabled={!tempCategory.trim()}
+                            className={`w-full py-3 font-black text-lg border-2 border-slate-900 rounded-lg shadow-md transition-all ${
+                                tempCategory.trim() 
+                                    ? 'bg-orange-500 text-white hover:bg-orange-600' 
+                                    : 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                            }`}
+                        >
+                            Add Category
+                        </button>
+                    </div>
+                </div>
+            )}
+
             {/* Submit Button */}
             <button 
                 type="submit"
                 className="w-full py-4 bg-orange-500 hover:bg-orange-600 text-white font-black text-xl border-2 border-slate-900 rounded-lg shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
             >
-                Spent
+                Spent !!!
             </button>
         </form>
     );

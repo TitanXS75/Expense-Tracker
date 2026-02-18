@@ -297,9 +297,9 @@ const TransactionForm = () => {
                         <button
                             onClick={handleSaveShortcut}
                             disabled={!tempAmount || shortcuts.length >= 5}
-                            className={`w-full py-3 font-black text-lg border-4 border-slate-900 rounded-lg shadow-md transition-all ${
+                            className={`w-full py-3 font-black text-lg border-2 border-slate-900 rounded-lg shadow-md transition-all ${
                                 tempAmount && shortcuts.length < 5 
-                                    ? 'bg-slate-900 text-white hover:shadow-lg' 
+                                    ? 'bg-orange-500 text-white hover:bg-orange-600' 
                                     : 'bg-slate-200 text-slate-400 cursor-not-allowed'
                             }`}
                         >

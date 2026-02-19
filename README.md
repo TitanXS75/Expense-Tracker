@@ -1,5 +1,4 @@
 # PFMA - Personal Finance Management App
-Expense Tracker 
 
 A neo-brutalist styled expense tracking application built with React and Vite.
 
